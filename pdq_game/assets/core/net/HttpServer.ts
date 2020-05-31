@@ -8,8 +8,9 @@ export default class HttpServer extends XMLHttpRequest {
     /**发送成功的回调函数 */
     private cbComplete: Function;
 
-    public constructor(methodType: string, url: string, data: object, cbComplete: Function) {
+    public constructor(methodType: string, url: string, data: any, cbComplete: Function) {
         super();
+        // new();
         this.responseType = "";
         this.cbComplete = cbComplete;
         this.open(methodType, url);
@@ -18,10 +19,10 @@ export default class HttpServer extends XMLHttpRequest {
         let msg: string = JSON.stringify(data);
         this.send(msg);
 
-        this.onloadend = this.onLoadEndHandler;
-        this.onloadstart = this.onLoadStartHandler;
-        this.onprogress = this.onProgressHandler;
-        this.ontimeout = this.onTimeOutHanndler;
+        this.onLoadEndHandler = this.onloadend;
+        this.onLoadStartHandler = this.onloadstart;
+        this.onProgressHandler = this.onprogress;
+        this.onTimeOutHanndler = this.ontimeout;
     }
 
     /**
@@ -45,7 +46,7 @@ export default class HttpServer extends XMLHttpRequest {
      * @param e 
      */
     private onLoadEndHandler(e: ProgressEvent): void {
-        this.cbComplete && this.cbComplete(this.responseText); 
+        this.cbComplete && this.cbComplete(this.responseText);
         this.destroy();
     }
 

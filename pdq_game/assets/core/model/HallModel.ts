@@ -11,10 +11,9 @@ export default class HallModel extends BaseModel {
 
     public constructor() {
         super();
-        this.init();
     }
 
-    private init(): void {
+    public init(): void {
         this._userInfo = new UserInfo();
         this._userInfo.age = 50;
         this._userInfo.sex = 1;

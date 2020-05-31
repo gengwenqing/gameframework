@@ -1,3 +1,4 @@
+import ViewEventMgr from "../Event/ViewEventMgr";
 
 /**
  * 视图基类
@@ -6,41 +7,32 @@
  */
 export default class BaseView extends cc.Component {
 
-    public uiEles: UIContiner;
+    /**事件 */
+    public event: ViewEventMgr;
+
+    constructor() {
+        super();
+    }
+
     /**
      * 初始化  
      * 把节点上的UI 绑定到这个类中
      */
     private __init__(): void {
-        this.uiEles = new UIContiner();
-        this.uiEles.resolveNode(this.node);
+        this.resolveNode(this, this.node, "");
+        this.init();
     }
-}
 
-/**
- * 节点列表类
- * @author parker
- * 2020-01-13
- */
-export class UIContiner {
-    /**节点列表 */
-    public uiEleList: any = {};
-
-    /**分解节点 */
-    public resolveNode(node: cc.Node) {
-        for (let i: number = 0; i < node.childrenCount; i++) {
-            this.setEle(node.children[i]);
+    private resolveNode(thisObj: any, root: cc.Node, path) {
+        for (let i = 0; i < root.childrenCount; i++) {
+            thisObj[path + root.children[i].name] = root.children[i];
+            this.resolveNode(thisObj, root.children[i], path + root.children[i].name + "/");
         }
     }
-    /**设置节点信息 */
-    public setEle(node: cc.Node): void {
-        if (node) {
-            this.uiEleList[node.name] = node
-        }
-    }
-    /**获取 节点列表 */
-    public getEle(str: string): void {
-        return this.uiEleList[str];
+
+    /**初始化 */
+    public init(): void {
+
     }
 
 }

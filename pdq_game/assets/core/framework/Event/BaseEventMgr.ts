@@ -16,6 +16,7 @@ export default class BaseEventMgr {
             this.id = id;
         }
     }
+    
     /**
      * 监听事件 
      * @param key 事件key
@@ -50,6 +51,7 @@ export default class BaseEventMgr {
                     _args = iterator.args;
                 }
                 iterator.eventCb.apply(iterator.thisObj, [_args]);
+                this.removeEvent(key);
             }
         }
     }

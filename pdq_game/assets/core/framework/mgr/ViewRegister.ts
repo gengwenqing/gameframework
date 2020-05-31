@@ -29,10 +29,11 @@ export default class ViewRegister {
      * @param key 视图key
      */
     public getComCls(key: string): any {
-        for (const key in this.viewMap) {
+        for (const eleKey in this.viewMap) {
             if (this.viewMap.hasOwnProperty(key)) {
-                const element = this.viewMap[key];
-                return element;
+                if(key === eleKey){
+                   return this.viewMap[eleKey];
+                }
             }
         }
         return null;

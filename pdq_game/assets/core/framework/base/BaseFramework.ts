@@ -4,8 +4,6 @@ import ModelBase from "./BaseModel";
 import ModelMgr from "../mgr/ModelMgr";
 import ViewRegister from "../mgr/ViewRegister";
 import RegisterDef from "../RegisterDef";
-import ClubViewCtrl from "../../../Script/club/ClubViewCtrl";
-import ClubView from "../../../Script/club/ClubView";
 import ViewEventMgr from "../Event/ViewEventMgr";
 import BaseModel from "./BaseModel";
 
@@ -41,12 +39,16 @@ export default class BaseFramework extends cc.Component {
         this.mgrs = new Mgrs(this.viewEvent, this.netMsgMgr, this.modelMgr);
         this.uiMgr = new UIMgr(this.viewRegister, this.mgrs, rootNode);
         this.registerView();
+        this.init();
     }
     /**注册该framework下的所有视图 */
     protected registerView(): void {
 
     }
 
+    protected init(): void {
+
+    }
 
     /**删除供外部强行调用 */
     private __destroy__(): void {

@@ -26,10 +26,24 @@ export default class UIMgr {
      */
     public show(key: string): void {
         let clsObj = this._viewRegister.getComCls(key);
-        let layer = clsObj[2];
+        let layer = clsObj["layer"];
         let node: cc.Node = this.getCache(key);
         if (node) {
+            let curLayer = this.rootNode.getChildByName(layer);
+            if (node.parent == curLayer) {
+                // 不可重复. 还有一种tips是可重复出现,  可不放入缓存中,每次都生成一个新的对象;
+                node.setSiblingIndex(node.parent.childrenCount);
+                return;
+            }
+            let view = node.addComponent(clsObj["viewCls"]);
+            let viewCtrl: any = node.addComponent(clsObj["ctrlCls"]);
+            viewCtrl.view = view;
+            view["__init__"]();
+            viewCtrl["__init__"](this.mgrs, this);
+            viewCtrl.viewDidAppear();
             this.rootNode.getChildByName(layer).addChild(node);
+            node.setSiblingIndex(node.parent.childrenCount);
+
         } else {
             this.createUi(key);
         }
@@ -52,26 +66,56 @@ export default class UIMgr {
             } else {
                 let viewNode: cc.Node = cc.instantiate(res);
                 let view = viewNode.addComponent(viewCls);
-                let viewCtrl:any = viewNode.addComponent(viewCtrlCls);
-                view["__init__"]();
-                viewCtrl["__init__"](this.mgrs);
+                let viewCtrl: any = viewNode.addComponent(viewCtrlCls);
                 viewCtrl.view = view;
-                this.addCache(key, viewNode);
+                view["__init__"]();
+                viewCtrl["__init__"](this.mgrs, this);
                 this.rootNode.getChildByName(layer).addChild(viewNode);
+                viewNode.setSiblingIndex(viewNode.parent.childrenCount);
+                viewCtrl.viewDidAppear();
+                this.addCache(key, viewNode);
                 return viewNode;
             }
         });
         return null;
     }
 
+    /**
+   * 创建Ui
+   * @param key 
+   */
+    public createNodeCom(key: string, cbFun?: Function, thisObj?: any): void {
+        let clsObj = this._viewRegister.getComCls(key);
+        let viewCtrlCls = clsObj["ctrlCls"];
+        let viewCls = clsObj["viewCls"];
+        let path = viewCls.PATH;
+
+        cc.loader.loadRes(path, cc.Prefab, (err, res) => {
+            if (err) {
+                console.log("加载资源失败");
+            } else {
+                let viewNode: cc.Node = cc.instantiate(res);
+                let view = viewNode.addComponent(viewCls);
+                let viewCtrl: any = viewNode.addComponent(viewCtrlCls);
+                viewCtrl.view = view;
+                view["__init__"]();
+                viewCtrl["__init__"](this.mgrs, this);
+                cbFun.apply(thisObj, [viewNode]);
+            }
+        });
+    }
+
+
     /**关闭界面 */
     public close(key: string): void {
         let clsObj = this._viewRegister.getComCls(key);
-        let viewCtrlCls = clsObj[0];
-        let viewCls = clsObj[1];
-        let layer = clsObj[2];
+        let viewCtrlCls = clsObj["ctrlCls"];
+        let viewCls = clsObj["viewCls"];
+        let layer = clsObj["layer"];
         let node = this.getCache(key);
         if (node) {
+            node.removeComponent(viewCtrlCls);
+            node.removeComponent(viewCls);
             this.rootNode.getChildByName(layer).removeChild(node);
         } else {
             console.log("您的关闭的界面 尚未打开");
@@ -98,9 +142,11 @@ export default class UIMgr {
 
     /**从缓存里面拿 */
     private getCache(key: string): cc.Node {
-        for (const key in this._cacheList) {
+        for (const elekey in this._cacheList) {
             if (this._cacheList.hasOwnProperty(key)) {
-                return this._cacheList[key];
+                if (elekey === key) {
+                    return this._cacheList[elekey];
+                }
             }
         }
         return null;

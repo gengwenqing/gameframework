@@ -1,3 +1,6 @@
+import App from "../../Script/App";
+import GlobalEventDef from "../framework/GlobalEventDef";
+
 /**
  * webSocket 
  * 单连接scoket ,目前只有一个连接需求, 如果多个的话, 可以进行一个socketManager管理
@@ -52,6 +55,7 @@ export default class Socket {
         ws.onmessage = (evt) => {
             console.log("接收到服务器消息:" + evt.data);
             /**利用事件分发出去*/
+            App.GlobalEventMgr.dispatchEvent(GlobalEventDef.DISPENSE_MESSAGE, evt.data);
         };
 
         ws.onclose = (evt) => {

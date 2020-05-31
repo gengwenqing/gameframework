@@ -5,6 +5,10 @@
  */
 export default class BaseModel {
     public constructor() {
+        this.init();
+    }
+
+    public init():void{
 
     }
 }

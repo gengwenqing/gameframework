@@ -19,8 +19,11 @@ export default class BaseViewCtrl extends cc.Component {
     public netMsgMgr: NetMsgMgr;
     /**数据管理 */
     public modelMgr: ModelMgr;
+    /**UI管理器 */
+    public uiMgr: UIMgr;
 
     public constructor() {
+        console.log("构建baseviewCtrl类");
         super();
     }
 
@@ -28,11 +31,12 @@ export default class BaseViewCtrl extends cc.Component {
      * 创建时候,将管理器注入到viewCtrl
      * @param mgrs 管理器组
      */
-    private __init__(mgrs: Mgrs): void {
+    private __init__(mgrs: Mgrs, uiMgr: UIMgr): void {
         this.eventMgr = mgrs.viewEventMgr;
         this.netMsgMgr = mgrs.netMsgMgr;
         this.modelMgr = mgrs.modelMgr;
-
+        this.uiMgr = uiMgr;
+        this.view.event = this.eventMgr;
         this.init();
     }
 
@@ -40,7 +44,19 @@ export default class BaseViewCtrl extends cc.Component {
 
     }
 
-    public viewDidAppear(): void {
+    /**面板显示出来以后 */
+    protected viewDidAppear(): void {
 
     }
+
+    public onDestroy(): void {
+        // super.onDestroy();
+        this.destoryUi();
+    }
+
+    /**子类实现,删除监听事件,time函数,等其他 */
+    public destoryUi():void{
+
+    }
+
 }

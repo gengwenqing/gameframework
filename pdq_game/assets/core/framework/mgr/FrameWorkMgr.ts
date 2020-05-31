@@ -22,7 +22,7 @@ export default class FrameWorkMgr extends BaseSingle {
                 let viewNode = cc.instantiate(res);
                 let fw = viewNode.addComponent(fwCls);
                 fw.__init__(viewNode, model);
-                this.fwList[fw.toString()] = viewNode;
+                this.fwList[prefabPath] = viewNode;
                 cc.director.getScene().getChildByName("Canvas").addChild(viewNode);
             }
         })
@@ -34,9 +34,10 @@ export default class FrameWorkMgr extends BaseSingle {
      * @param fw 
      */
     public nuLoad(_fw: new (rootNode) => FrameworkBase): void {
-        let fwName = _fw.toString();
+        let fwName = _fw["PATH"];
         let fw = this.getFW(fwName);
-        fw["__destory__"]();
+        let com = fw.getComponent(_fw);
+        com["__destroy__"]();
         cc.loader.release(fwName);
     }
 
